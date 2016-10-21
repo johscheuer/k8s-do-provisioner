@@ -50,7 +50,7 @@ func readClusterConfig() *Cluster {
 	return cluster
 }
 
-func provision(cluster *Cluster, client *godo.Client) {
+func provisionCluster(cluster *Cluster, client *godo.Client) {
 	//TODO not more than 10 droplet at a time :(
 	createRequests := &godo.DropletMultiCreateRequest{
 		Names:  append([]string{cluster.Master}, cluster.getNodeNames()...),
@@ -84,8 +84,8 @@ func provision(cluster *Cluster, client *godo.Client) {
 			fmt.Printf("Something bad happened: %s\n\n", err)
 		}
 
-		for drop.Status != "active" {
-			//TODO backoff 5 tries
+		tries := 5
+		for drop.Status != "active" && tries > 0 {
 			time.Sleep(5 * time.Second)
 			fmt.Println("Wait for creation...")
 			drop, _, err = client.Droplets.Get(droplet.ID)
@@ -120,7 +120,7 @@ func provision(cluster *Cluster, client *godo.Client) {
 	copyAdminConf(master)
 }
 
-func deprovision(cluster *Cluster, client *godo.Client) {
+func deprovisionCluster(cluster *Cluster, client *godo.Client) {
 	droplets, _, err := client.Droplets.List(nil)
 	if err != nil {
 		fmt.Println(err)

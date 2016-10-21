@@ -20,8 +20,8 @@ func (t *TokenSource) Token() (*oauth2.Token, error) {
 	}, nil
 }
 
-func createNewDOClient() *godo.Client {
-	pat, err := ioutil.ReadFile("./.token")
+func createNewDOClient(tokenFile string) *godo.Client {
+	pat, err := ioutil.ReadFile(tokenFile)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)

@@ -14,7 +14,7 @@ func provisionRepo(nodes []*Node) {
 
 	for _, node := range nodes {
 		go func(node *Node) {
-			fmt.Printf("Provision Node %s\n", node.Name)
+			fmt.Printf("Provision Repo and Binaries at Node %s\n", node.Name)
 			// TODO error checking
 
 			executeSCPCommand("./files/kubernetes.repo", fmt.Sprintf("root@%s:/etc/yum.repos.d/kubernetes.repo", node.publicIP))
@@ -53,6 +53,7 @@ func provisionNode(tokenString string, nodes []*Node) {
 	for _, node := range nodes {
 		go func(node *Node) {
 			fmt.Printf("Provision Kubernetes Node %s\n", node.Name)
+			executeSSHCommand(node.publicIP, fmt.Sprintf("hostnamectl set-hostname %s", node.publicIP))
 			executeSSHCommand(node.publicIP, fmt.Sprintf("%s", tokenString))
 			wg.Done()
 		}(node)
@@ -63,11 +64,15 @@ func provisionNode(tokenString string, nodes []*Node) {
 
 func copyAdminConf(master *Node) {
 	executeSCPCommand(fmt.Sprintf("root@%s:/etc/kubernetes/admin.conf", master.publicIP), "./admin.conf")
-	out, _ := executeKubernetesCommand([]string{"get", "nodes"})
-	fmt.Println(string(out))
-	out, _ = executeKubernetesCommand([]string{"create", "-f", "https://raw.githubusercontent.com/tigera/canal/master/k8s-install/kubeadm/canal.yaml"})
+
+	out, _ := executeKubernetesCommand([]string{"create", "-f", "https://raw.githubusercontent.com/tigera/canal/master/k8s-install/kubeadm/canal.yaml"})
 	fmt.Println(string(out))
 	out, _ = executeKubernetesCommand([]string{"create", "-f", "https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml"})
+	fmt.Println(string(out))
+
+	out, _ = executeKubernetesCommand([]string{"get", "nodes"})
+	fmt.Println(string(out))
+	out, _ = executeKubernetesCommand([]string{"get", "componentstatus"})
 	fmt.Println(string(out))
 
 	fmt.Println("Use \"kubectl --kubeconfig admin.conf\" to interact with your new cluster")

@@ -1,23 +1,23 @@
 package main
 
-import (
-	"flag"
-	"os"
-)
+import "flag"
 
 var (
-	cleanUp = flag.Bool("cleanup", false, "removes all dropletes of the cluster")
+	cleanUp   = flag.Bool("cleanup", false, "removes all dropletes of the cluster")
+	provision = flag.Bool("provision", false, "provisions a cluster like specified in cluster.yaml")
+	tokenFile = flag.String("token", ".token", "path to the file containing the API token")
 )
 
 func main() {
 	flag.Parse()
 	cluster := readClusterConfig()
-	client := createNewDOClient()
+	client := createNewDOClient(*tokenFile)
 
 	if *cleanUp {
-		deprovision(cluster, client)
-		os.Exit(0)
+		deprovisionCluster(cluster, client)
 	}
 
-	provision(cluster, client)
+	if *provision {
+		provisionCluster(cluster, client)
+	}
 }
