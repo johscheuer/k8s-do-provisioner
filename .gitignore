@@ -1,4 +1,4 @@
 admin.conf
 .token
 k8s-do-provisioner
-certs
+cluster.yaml

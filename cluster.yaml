@@ -1,8 +1,0 @@
-master: master
-nodes: 9
-region: fra1
-size: 8gb
-image: centos-7-x64
-sshkeys:
-  - id: 1573354
-    fingerprint: fb:b8:ac:45:be:fb:70:19:6f:f3:2e:d3:48:b2:b2:1c
