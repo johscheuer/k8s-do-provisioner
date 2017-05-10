@@ -1,8 +1,0 @@
-master: master
-nodes: 4
-region: fra1
-size: 8gb
-image: centos-7-x64
-sshkeys:
-  - id: <ID>
-    fingerprint: <fingerprint>
