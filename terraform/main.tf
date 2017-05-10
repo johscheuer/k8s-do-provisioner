@@ -25,7 +25,7 @@ resource "digitalocean_droplet" "master" {
     name                = "${var.user}-master"
     private_networking  = true
     region              = "${var.region}"
-    size                = "${var.size}" 
+    size                = "${var.size}"
     ssh_keys            = ["${var.ssh_key_id}"]
     tags                = ["${digitalocean_tag.kubernetes.id}", "${digitalocean_tag.user.id}"]
     user_data           = "${data.template_file.master_userdata.rendered}"
@@ -57,7 +57,7 @@ output "master" {
 }
 
 output "master_private" {
-    value             = "${digitalocean_droplet.master.ipv4_address_private}"
+    value               = "${digitalocean_droplet.master.ipv4_address_private}"
 }
 
 output "nodes" {

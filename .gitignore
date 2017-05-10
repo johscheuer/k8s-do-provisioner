@@ -4,3 +4,4 @@ k8s-do-provisioner
 cluster.yaml
 *.tfstate*
 admin.conf
+terraform.tfvars

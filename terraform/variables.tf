@@ -15,13 +15,13 @@ variable "node_count" {
 }
 
 variable "region" {
-  default = "fra1"
+  default   = "fra1"
 }
 
 variable "size" {
-  default = "8gb"
+  default   = "8gb"
 }
 
 variable "token" {
-  default = "a7e9da.7776e834bd816af8"
+  default   = "a7e9da.7776e834bd816af8"
 }

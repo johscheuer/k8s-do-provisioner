@@ -9,6 +9,8 @@ This is a PoC that uses `terraform`, `DigitalOcean` and `kubeadm`
 
 ## Usage
 
+### Setup
+
 If you installed `doctl` and initialized it, your `access-token` is available in `$HOME/.config/doctl/config.yaml`.
 
 Be sure that your SSH key is imported in DigitalOcean:
@@ -17,28 +19,40 @@ Be sure that your SSH key is imported in DigitalOcean:
 doctl compute ssh-key import my-key --public-key-file $HOME/.ssh/id_rsa.pub
 ```
 
+Initalize all variables used by the terraform setup:
+
+```bash
+echo "do_token=\"$(grep "access-token" $HOME/.config/doctl/config.yaml | sed 's/access-token: //g')\"" > terraform.tfvars
+echo "ssh_key_id=\"$(doctl compute ssh-key get $(ssh-keygen -E md5 -lf "$HOME/.ssh/id_rsa.pub" | awk '{ print $2 }' | sed -e "s/^MD5://") -o json | jq '.[-1].id')\"" >> terraform.tfvars
+echo "user=\"$(logname)\"" >> terraform.tfvars
+```
+
+Additional variables:
+
+```bash
+echo "node_count=10" >> terraform.tfvars
+echo "size=\"18gb\"" >> terraform.tfvars
+echo "token=\"a7e9da.7776e834bd816af8\"" >> terraform.tfvars
+```
+
+### Cluster creation
+
 First check that everything works:
 
 ```bash
-terraform plan -var="do_token=$(grep "access-token" $HOME/.config/doctl/config.yaml | sed 's/access-token: //g')" \
-                -var="ssh_key_id=$(doctl compute ssh-key get $(ssh-keygen -E md5 -lf "$HOME/.ssh/id_rsa.pub" | awk '{ print $2 }' | sed -e "s/^MD5://") -o json | jq '.[-1].id')" \
-                -var="user=$(logname)" terraform
+terraform plan -var-file="terraform.tfvars" terraform
 ```
 
 If the plan command exists successful we can run apply:
 
 ```bash
-terraform apply -var="do_token=$(grep "access-token" $HOME/.config/doctl/config.yaml | sed 's/access-token: //g')" \
-                -var="ssh_key_id=$(doctl compute ssh-key get $(ssh-keygen -E md5 -lf "$HOME/.ssh/id_rsa.pub" | awk '{ print $2 }' | sed -e "s/^MD5://") -o json | jq '.[-1].id')" \
-                -var="user=$(logname)" terraform
+terraform apply -var-file="terraform.tfvars" terraform
 ```
 
 If you want to destroy the cluster simply run:
 
 ```bash
-terraform destoy -var="do_token=$(grep "access-token" $HOME/.config/doctl/config.yaml | sed 's/access-token: //g')" \
-                -var="ssh_key_id=$(doctl compute ssh-key get $(ssh-keygen -E md5 -lf "$HOME/.ssh/id_rsa.pub" | awk '{ print $2 }' | sed -e "s/^MD5://") -o json | jq '.[-1].id')" \
-                -var="user=$(logname)" terraform
+terraform destoy -var-file="terraform.tfvars" terraform
 ```
 
 ## Next steps
