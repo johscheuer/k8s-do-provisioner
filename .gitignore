@@ -5,3 +5,4 @@ cluster.yaml
 *.tfstate*
 admin.conf
 terraform.tfvars
+quobyte
